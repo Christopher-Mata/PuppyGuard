@@ -1,11 +1,10 @@
 {
     "compilerOptions": {
-        "module": "ES6",
+        "module": "NodeNext",
         "outDir": "build",
-        "moduleResolution": "Node"
     },
     "exclude": [
         "node_modules"
     ],
-    "include": ["src/**/*"],
+    "include": ["src"],
 }
