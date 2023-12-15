@@ -25,11 +25,10 @@ client.once('ready', () => {
     console.log(`logged in as:\t${client.user.tag}`);
 })
 
-client.on('guildAvailable', guild => {
-    badDogList[guild.id] = []
-})
-
 client.on('messageCreate', async message => {    
+
+    if (!badDogList[message.guild.id]) badDogList[message.guild.id] = []
+
     if (badDogList[message.guild.id].filter(user => message.author.id === user.id).length === 1) {
         const badDogIndex = badDogList[message.guild.id].map(user => user.id).indexOf(message.author.id)
         badDogList[message.guild.id][badDogIndex].barkcount++
@@ -57,6 +56,8 @@ This is your ${barkcount}/${maxBarks * (Math.floor((barkcount - 1) / maxBarks) +
 
 client.on('interactionCreate', async interaction => {
     console.log("\n\n\n---------interaction received-------\n");
+    
+    if (!badDogList[interaction.guild.id]) badDogList[interaction.guild.id] = []
 
     if (!interaction.isChatInputCommand()) return
 
