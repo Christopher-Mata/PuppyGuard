@@ -7,10 +7,8 @@ This project was built by:
 - [Zoltan Nahoczki](https://github.com/nahoczki)
 - [Elijah Kulpinski](https://github.com/DividesZero)
 - [Brandon Murry](https://github.com/FishingInBot)
-- [Sonjia Mitrovic](https://github.com/SonjaMitrovic)
 - [David Milan-Medina](https://github.com/DevidM9779)
-- [Timothy H. Knautz](https://github.com/sinecosine314)
-- [Josh](https://github.com/chzcurd)
+- [Josh Osmanski](https://github.com/chzcurd)
 
 # Dependencies/Libraries Used
 Discord.js
