@@ -3,15 +3,13 @@ THis is a goofy little discord bot for a quick modetation tool. Ment for those w
 This project was built by:
 - [Christopher Mata](https://github.com/Christopher-Mata)
 - [Matthew Fallon](https://github.com/MatthewFallon)
-- [Aaron Antreassian](https://www.github.com/Antreassian616)
 - [Zoltan Nahoczki](https://github.com/nahoczki)
-- [Elijah Kulpinski](https://github.com/DividesZero)
-- [Brandon Murry](https://github.com/FishingInBot)
 - [David Milan-Medina](https://github.com/DevidM9779)
 - [Josh Osmanski](https://github.com/chzcurd)
 
 # Dependencies/Libraries Used
-Discord.js
+- Discord.js
+- Typescript
 
 # Whats Needed
 - Docker
