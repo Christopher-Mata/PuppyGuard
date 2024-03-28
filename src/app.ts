@@ -1,8 +1,11 @@
 import { Client, GatewayIntentBits, GuildMember } from "discord.js";
 import { env } from "process";
 import "./setup.js";
+import { connect } from "mongoose";
 
 const client = new Client({ intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages, GatewayIntentBits.GuildModeration] });
+
+await connect(process.env['MONGO_URL'] + process.env['DB_NAME'])
 
 type GuildMemberMap = {
     [guildID: string]: { id: string, barkcount: number }[]
@@ -42,10 +45,8 @@ client.on('messageCreate', async message => {
         console.log(`${message.author.id} is a bad dog.\tUserID:${badDogList[message.guild.id][badDogIndex].id}\tBarkCount:${badDogList[message.guild.id][badDogIndex].barkcount}`);
 
 
-        const replyText = `# **${barkList[Math.floor(Math.random() * barkList.length)]}**
-        
-This is your ${barkcount}/${maxBarks * (Math.floor((barkcount - 1) / maxBarks) + 1)} strike. ${barkcount % maxBarks === 0 ? 'Goodbye for now!' : ''}
-        `
+        const replyText = `# **${barkList[Math.floor(Math.random() * barkList.length)]}**\n\n` +
+        `This is your ${barkcount}/${maxBarks * (Math.floor((barkcount - 1) / maxBarks) + 1)} strike. ${barkcount % maxBarks === 0 ? 'Goodbye for now!' : ''}`
         message.reply(replyText)
 
         if (barkcount % maxBarks === 0) {
@@ -122,10 +123,8 @@ client.on('interactionCreate', async interaction => {
                     console.log(`${interaction.user.id} is a bad dog.\tUserID:${badDogList[interaction.guild.id][badDogIndex].id}\tBarkCount:${badDogList[interaction.guild.id][badDogIndex].barkcount}`);
 
 
-                    const replyText = `# **${barkList[Math.floor(Math.random() * barkList.length)]}**
-        
-*Womp Womp*, /Pet was not effective. This is your ${barkcount}/${maxBarks * (Math.floor((barkcount - 1) / maxBarks) + 1)} strike. ${barkcount % maxBarks === 0 ? 'Goodbye for now!' : ''}
-        `
+                    const replyText = `# **${barkList[Math.floor(Math.random() * barkList.length)]}**\n\n` +
+                    `*Womp Womp*, /Pet was not effective. This is your ${barkcount}/${maxBarks * (Math.floor((barkcount - 1) / maxBarks) + 1)} strike. ${barkcount % maxBarks === 0 ? 'Goodbye for now!' : ''}`
                     interaction.reply(replyText)
 
                     if (barkcount % maxBarks === 0) {
