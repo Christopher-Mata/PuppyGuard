@@ -37,7 +37,7 @@ const petCommand = new SlashCommandBuilder()
 
 const configCommand = new SlashCommandBuilder()
         .setName('config')
-        .setDescription('')
+        .setDescription('Configure the command.')
         .addIntegerOption(option => 
                 option
                         .setName('max_barks')
@@ -48,6 +48,11 @@ const configCommand = new SlashCommandBuilder()
                 option
                         .setName('no_bark_role')
                         .setDescription('Add a bark exception role that will prevent the puppy from siccing someone.')
+        )
+        .addBooleanOption(option => 
+                option
+                        .setName('reset')
+                        .setDescription('Resets all settings to defaults if not set in the command.')
         )
         .setDefaultMemberPermissions(PermissionFlagsBits.ManageGuild)
 

@@ -56,8 +56,6 @@ client.on(Events.MessageCreate, async message => {
 })
 
 client.on(Events.InteractionCreate, async interaction => {
-    console.log("\n\n\n---------interaction received-------\n");
-
     if (!interaction.isChatInputCommand()) return
 
     const guildModel = await GuildModel.findOne({guildID: interaction.guildId})
@@ -108,7 +106,7 @@ client.on(Events.InteractionCreate, async interaction => {
             interaction.reply({ content: `${client.user} has settled down.`, ephemeral: true })
 
             break
-        case 'pet':
+        case 'pet': {
             console.log(`Appreciating the pet.`);
 
             if (badDog) {
@@ -139,6 +137,18 @@ client.on(Events.InteractionCreate, async interaction => {
             } else {
                 interaction.reply('# Wags Tail')
             }
+            break
+        }
+        case 'config': {
+            const reset = interaction.options.getBoolean('reset') || false
+            const maxBarks = interaction.options.getInteger('max_barks') || (reset ? 3 : guildModel.maxBarks)
+            const noBarkRole = interaction.options.getRole('no_bark_role')?.id || (reset ? '' : guildModel.noBarkRole)
+
+            await guildModel.updateOne({maxBarks, noBarkRole})
+
+            interaction.reply({content: `Comand Configured.\nMax Barks:\t${maxBarks}\nNo Bark Role:\t${interaction.guild.roles.cache.get(noBarkRole)?.toString() || 'None'}`, ephemeral: true})
+            break
+        }
         default:
             break
     }
