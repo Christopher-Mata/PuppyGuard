@@ -13,7 +13,7 @@ spec:
     spec:
       containers:
       - name: puppyguard
-        image: registry.fallon.io:443/puppyguard:1.3.0
+        image: registry.fallon.io:443/puppyguard:1.3.2
         imagePullPolicy: Always
         resources:
           limits:

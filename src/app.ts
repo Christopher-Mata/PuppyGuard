@@ -35,13 +35,14 @@ client.on(Events.MessageCreate, async message => {
     }
 
     if (badDog) {
-        const barkCount = badDog.barkCount++
+        const barkCount = badDog.barkCount + 1
         await GuildModel.updateOne({ _id: guildModel._id, 'badDogs.userID': badDog.userID }, { '$set': { 'badDogs.$.barkCount': barkCount} })
-        console.log(`${message.author.id} is a bad dog.\tUserID:${badDog.userID}\tBarkCount:${badDog.barkCount}`);
+        console.log(`${message.author.id} is a bad dog.\tUserID:${badDog.userID}\tBarkCount:${barkCount}`);
 
 
         const replyText = `# **${barkList[Math.floor(Math.random() * barkList.length)]}**\n\n` +
-        `This is your ${barkCount % guildModel.maxBarks}/${guildModel.maxBarks} strike. ${barkCount % guildModel.maxBarks === 0 ? 'Goodbye for now!' : ''}`
+        `This is your ${(barkCount % guildModel.maxBarks) || 3}/${guildModel.maxBarks} strike. ` + 
+        `${barkCount % guildModel.maxBarks === 0 ? `Goodbye for now! Timeout #${Math.floor(barkCount / guildModel.maxBarks)}` : ''}`
         message.reply(replyText)
 
         if (barkCount % guildModel.maxBarks === 0) {
@@ -117,12 +118,13 @@ client.on(Events.InteractionCreate, async interaction => {
                     console.log(`${interaction.user.displayName} was let off the hook`)
                     interaction.reply('# Wags Tail \n This shall do.')
                 } else {
-                    const barkCount = badDog.barkCount++
+                    const barkCount = badDog.barkCount + 1
                     await GuildModel.updateOne({ _id: guildModel._id, 'badDogs.userID': badDog.userID }, { '$set': { 'badDogs.$.barkCount': barkCount } })
-                    console.log(`${pup.id} is a bad dog.\tUserID:${badDog.userID}\tBarkCount:${badDog.barkCount}`);
+                    console.log(`${pup.id} is a bad dog.\tUserID:${badDog.userID}\tBarkCount:${barkCount}`);
 
                     const replyText = `# **${barkList[Math.floor(Math.random() * barkList.length)]}**\n\n` +
-                        `*Womp Womp*, /Pet was not effective. This is your ${barkCount % guildModel.maxBarks}/${guildModel.maxBarks} strike. ${barkCount % guildModel.maxBarks === 0 ? 'Goodbye for now!' : ''}`
+                        `*Womp Womp*, /Pet was not effective. This is your ${(barkCount % guildModel.maxBarks) || 3}/${guildModel.maxBarks} strike. ` + 
+                        `${barkCount % guildModel.maxBarks === 0 ? `Goodbye for now! Timeout #${Math.floor(barkCount / guildModel.maxBarks)}` : ''}`
                     interaction.reply(replyText)
 
                     if (barkCount % guildModel.maxBarks === 0) {
