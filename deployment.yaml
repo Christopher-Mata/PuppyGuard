@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: puppyguard
+spec:
+  selector:
+    matchLabels:
+      app: puppyguard
+  template:
+    metadata:
+      labels:
+        app: puppyguard
+    spec:
+      containers:
+      - name: puppyguard
+        image: registry.fallon.io:443/puppyguard:1.3.0
+        imagePullPolicy: Always
+        resources:
+          limits:
+            memory: "128Mi"
+            cpu: "500m"
+        env:
+        - name: NODE_ENV
+          value: production
+        - name: DB_NAME
+          value: puppyguard
+        - name: MONGO_URL
+          valueFrom:
+            configMapKeyRef:
+              key: MONGO_URL
+              name: mongo
+        - name: CLIENT_ID
+          value: "1183624955238297751"
+        - name: TOKEN
+          valueFrom:
+            secretKeyRef:
+              key: token
+              name: puppyguard
