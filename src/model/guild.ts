@@ -9,6 +9,7 @@ interface IGuildBadDog {
 interface IGuild {
     guildID: string,
     maxBarks: number,
+    noBarkRole: string,
     badDogs: Types.Array<IGuildBadDog>
 }
 
@@ -20,6 +21,7 @@ const GuildBadDogSchema = new Schema<IGuildBadDog, Model<IGuildBadDog>>({
 const GuildSchema = new Schema<IGuild, Model<IGuild>> ({
     guildID: {type: String, required: true, unique: true},
     maxBarks: {type: Number, required: true, default: 3},
+    noBarkRole: {type: String, required: true},
     badDogs: [GuildBadDogSchema]
 })
 

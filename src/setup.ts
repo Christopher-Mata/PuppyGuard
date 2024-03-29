@@ -35,11 +35,28 @@ const petCommand = new SlashCommandBuilder()
         .setName('pet')
         .setDescription('Might prove your worth.')
 
+const configCommand = new SlashCommandBuilder()
+        .setName('config')
+        .setDescription('')
+        .addIntegerOption(option => 
+                option
+                        .setName('max_barks')
+                        .setDescription('Set the maximum barks before timing out a bad dog for 1 minute.')
+                        .setMinValue(1)
+        )
+        .addRoleOption(option => 
+                option
+                        .setName('no_bark_role')
+                        .setDescription('Add a bark exception role that will prevent the puppy from siccing someone.')
+        )
+        .setDefaultMemberPermissions(PermissionFlagsBits.ManageGuild)
+
 const commands = [
         sicCommand.toJSON(),
         unsicCommand.toJSON(),
         settleCommand.toJSON(),
-        petCommand.toJSON()
+        petCommand.toJSON(),
+        configCommand.toJSON()
 ]
 
 await rest.put(Routes.applicationCommands(env['CLIENT_ID']), { body: commands })

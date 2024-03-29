@@ -1,8 +1,10 @@
 import { Client, Events, GatewayIntentBits, GuildMember } from "discord.js";
 import { env } from "process";
-import "./setup.js";
 import { connect } from "mongoose";
 import GuildModel from "./model/guild.js";
+import { config } from "dotenv";
+
+config()
 
 const client = new Client({ intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages, GatewayIntentBits.GuildModeration] });
 
@@ -27,14 +29,14 @@ client.on(Events.MessageCreate, async message => {
     const badDog = guildModel.badDogs.find(user => user.userID === message.author.id)
 
     if (message.mentions.users.has(client.user.id) || message.mentions.repliedUser === client.user) {
-        if (!badDog) {
-            guildModel.updateOne({'$push': { badDogs: { userID: message.author.id, barkCount: 0 }}})
+        if (!badDog && !message.member.roles.cache.get(guildModel.noBarkRole)) {
+            await guildModel.updateOne({'$push': { badDogs: { userID: message.author.id, barkCount: 0 }}})
         }
     }
 
     if (badDog) {
         const barkCount = badDog.barkCount++
-        GuildModel.updateOne({ _id: guildModel._id, 'badDogs.userID': badDog.userID }, { '$set': { 'badDogs.$.barkCount': barkCount} })
+        await GuildModel.updateOne({ _id: guildModel._id, 'badDogs.userID': badDog.userID }, { '$set': { 'badDogs.$.barkCount': barkCount} })
         console.log(`${message.author.id} is a bad dog.\tUserID:${badDog.userID}\tBarkCount:${badDog.barkCount}`);
 
 
@@ -60,7 +62,7 @@ client.on(Events.InteractionCreate, async interaction => {
 
     const guildModel = await GuildModel.findOne({guildID: interaction.guildId})
 
-    let pup = interaction.options.getUser('bad_dog') || interaction.options.getUser('good_pupper')
+    const pup = interaction.options.getUser('bad_dog') || interaction.options.getUser('good_pupper') || interaction.user
     const badDog = guildModel.badDogs.find(user => user.userID === pup.id)
 
     switch (interaction.commandName) {
@@ -68,11 +70,17 @@ client.on(Events.InteractionCreate, async interaction => {
             if (pup.id !== client.user.id) {
                 console.log(`the Bad Dog ${pup.displayName}:${pup.id} is being sicced`);
 
-                if (!badDog) {
-                    guildModel.updateOne({'$push': { badDogs: { userID: pup.id, barkCount: 0 }}})
-                }
+                const badDogMember = interaction.options.getMember('bad_dog') as GuildMember
 
-                interaction.reply({ content: `User ${pup} is being sicced now!`, ephemeral: true })
+                if (!badDog && !badDogMember.roles.cache.get(guildModel.noBarkRole)) {
+                    await guildModel.updateOne({'$push': { badDogs: { userID: pup.id, barkCount: 0 }}})
+                    interaction.reply({ content: `User ${pup} is being sicced now!`, ephemeral: true })
+                } else if (badDogMember.roles.cache.get(guildModel.noBarkRole)) {
+                    interaction.reply({ content: `User ${pup} is not allowed to be sicced!`, ephemeral: true })
+                } else {
+                    interaction.reply({ content: `User ${pup} was already being sicced!`, ephemeral: true })
+                }
+                
             } else {
                 console.log('Cannot sic self!');
 
@@ -83,7 +91,7 @@ client.on(Events.InteractionCreate, async interaction => {
             if (badDog) {
                 console.log(`the Good Dog ${pup.displayName}:${pup.id} is being unsicced`);
 
-                guildModel.updateOne({'$pull': { badDogs: { userID: pup.id }}})
+                await guildModel.updateOne({'$pull': { badDogs: { userID: pup.id }}})
 
                 interaction.reply({ content: `The improved pupper ${pup}, has been given a break`, ephemeral: true })
             } else {
@@ -95,7 +103,7 @@ client.on(Events.InteractionCreate, async interaction => {
         case `settle`:
             console.log(`Settling down.`);
 
-            guildModel.updateOne({'$set': { 'badDogs': [] }})
+            await guildModel.updateOne({'$set': { 'badDogs': [] }})
 
             interaction.reply({ content: `${client.user} has settled down.`, ephemeral: true })
 
@@ -107,12 +115,12 @@ client.on(Events.InteractionCreate, async interaction => {
                 console.log(`Deciding ${interaction.user.displayName}'s fate`)
 
                 if (Math.floor(Math.random() * 100) > 72) {
-                    guildModel.updateOne({'$pull': { badDogs: { userID: pup.id }}})
+                    await guildModel.updateOne({'$pull': { badDogs: { userID: pup.id }}})
                     console.log(`${interaction.user.displayName} was let off the hook`)
                     interaction.reply('# Wags Tail \n This shall do.')
                 } else {
                     const barkCount = badDog.barkCount++
-                    GuildModel.updateOne({ _id: guildModel._id, 'badDogs.userID': badDog.userID }, { '$set': { 'badDogs.$.barkCount': barkCount } })
+                    await GuildModel.updateOne({ _id: guildModel._id, 'badDogs.userID': badDog.userID }, { '$set': { 'badDogs.$.barkCount': barkCount } })
                     console.log(`${pup.id} is a bad dog.\tUserID:${badDog.userID}\tBarkCount:${badDog.barkCount}`);
 
                     const replyText = `# **${barkList[Math.floor(Math.random() * barkList.length)]}**\n\n` +
